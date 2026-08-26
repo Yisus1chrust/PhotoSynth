@@ -1,0 +1,6 @@
+{
+  "name": "Photo Synth",
+  "description": "Polyphonic software synthesizer plugin converting images into unique synth patches with real-time WebAudio DSP and C++ JUCE export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
