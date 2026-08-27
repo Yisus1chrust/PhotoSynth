@@ -1,0 +1,108 @@
+name: Build Photo Synth Plugin
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: macOS Build (VST3 + AU)
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install CMake
+      run: brew install cmake
+    
+    - name: Configure CMake
+      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXTRAS=OFF -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_TOOL_SUPPORT=OFF -DJUCE_BUILD_HELPER_TOOLS=OFF --fresh
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: Package Plugins (macOS)
+      run: |
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-macOS
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        find Builds -name "*.component" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        find Builds -name "*.app" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-macOS/
+    
+    - name: Upload macOS Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-macOS
+        path: PhotoSynth-macOS/
+        if-no-files-found: ignore
+
+  build-windows:
+    name: Windows Build (VST3)
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Configure CMake
+      run: cmake -B Builds -A x64 --fresh
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: Package Plugins (Windows)
+      shell: bash
+      run: |
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-Windows
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Windows/ \; 2>/dev/null || true
+        find Builds -name "*.exe" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Windows/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-Windows/
+    
+    - name: Upload Windows Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-Windows
+        path: PhotoSynth-Windows/
+        if-no-files-found: ignore
+
+  build-linux:
+    name: Linux Build (VST3) - Testing Only
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ libasound2-dev libx11-dev libxext-dev libfreetype6-dev libglu1-mesa-dev libwebkit2gtk-4.1-dev || sudo apt-get install -y libwebkit2gtk-4.0-dev
+    
+    - name: Configure CMake
+      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release --fresh
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: Package Plugins (Linux)
+      run: |
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-Linux
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Linux/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-Linux/ || echo "No plugins found"
+    
+    - name: Upload Linux Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-Linux
+        path: PhotoSynth-Linux/
+        if-no-files-found: ignore
