@@ -3,14 +3,11 @@
 namespace photosynth
 {
     PhotoSynthAudioProcessorEditor::PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor& p)
-        : AudioProcessorEditor (&p), processor (p), webView (juce::WebBrowserComponent::Options().withBackend (juce::WebBrowserComponent::Options::Backend::webview2))
+        : AudioProcessorEditor (&p), processor (p)
     {
         addAndMakeVisible (webView);
         setSize (1280, 760);
-
-        // Point the webview to your local built index.html or resource
-        // For local development bundling, we load the root URL or bundled path
-        webView.goToURL ("http://localhost:5173"); // Or your bundled file URL
+        webView.goToURL ("http://localhost:5173");
     }
 
     PhotoSynthAudioProcessorEditor::~PhotoSynthAudioProcessorEditor() = default;
