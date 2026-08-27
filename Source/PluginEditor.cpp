@@ -1,24 +1,24 @@
-#include "PluginEditor.h"
+#pragma once
+
+#include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "PluginProcessor.h"
 
 namespace photosynth
 {
-    PhotoSynthAudioProcessorEditor::PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor& p)
-        : AudioProcessorEditor (&p), processor (p)
+    class PhotoSynthAudioProcessorEditor : public juce::AudioProcessorEditor
     {
-        addAndMakeVisible (webView);
-        setSize (1280, 760);
-        webView.goToURL ("http://localhost:5173");
-    }
+    public:
+        PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor&);
+        ~PhotoSynthAudioProcessorEditor() override;
 
-    PhotoSynthAudioProcessorEditor::~PhotoSynthAudioProcessorEditor() = default;
+        void paint (juce::Graphics&) override;
+        void resized() override;
 
-    void PhotoSynthAudioProcessorEditor::paint (juce::Graphics& g)
-    {
-        g.fillAll (juce::Colour (0xff0b1119));
-    }
+    private:
+        PhotoSynthAudioProcessor& processor;
+        juce::WebBrowserComponent webView;
 
-    void PhotoSynthAudioProcessorEditor::resized()
-    {
-        webView.setBounds (getLocalBounds());
-    }
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhotoSynthAudioProcessorEditor)
+    };
 }
