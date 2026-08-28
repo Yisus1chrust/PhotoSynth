@@ -1,28 +1,26 @@
 #pragma once
 
-#include <JuceHeader.h>
-#include "CommonTypes.h"
+#include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "PluginProcessor.h"
 
 namespace photosynth
 {
-    class PhysicalModeling
+    class PhotoSynthAudioProcessorEditor : public juce::AudioProcessorEditor
     {
     public:
-        void prepare(const juce::dsp::ProcessSpec& spec);
-        void reset();
-        void updateFromPatch(const PatchParameters& patch, double sampleRate);
-        void processBlock(juce::AudioBuffer<float>& buffer);
+        PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor&);
+        ~PhotoSynthAudioProcessorEditor() override;
+
+        void paint (juce::Graphics&) override;
+        void resized() override;
 
     private:
-        juce::dsp::StateVariableTPTFilter<float> body1, body2, body3;
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> flutterDelay { 8192 };
-        juce::dsp::Oscillator<float> flutterLfo;
+        PhotoSynthAudioProcessor& processor;
+        juce::WebBrowserComponent webView;
+        
+        std::unique_ptr<juce::FileChooser> chooser;
 
-        std::vector<float> shaperCurve;
-        float flutterDepthSamples = 0.0f;
-        float acousticWeight = 0.2f;
-        float lastSampleRate = 44100.0f;
-
-        float saturate(float x) const;
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhotoSynthAudioProcessorEditor)
     };
 }
