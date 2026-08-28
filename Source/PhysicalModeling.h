@@ -1,26 +1,35 @@
 #pragma once
 
-#include <juce_gui_extra/juce_gui_extra.h>
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "PluginProcessor.h"
+#include <juce_dsp/juce_dsp.h>
+#include "CommonTypes.h"
 
 namespace photosynth
 {
-    class PhotoSynthAudioProcessorEditor : public juce::AudioProcessorEditor
+    class PhysicalModeling
     {
     public:
-        PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor&);
-        ~PhotoSynthAudioProcessorEditor() override;
+        PhysicalModeling() = default;
+        ~PhysicalModeling() = default;
 
-        void paint (juce::Graphics&) override;
-        void resized() override;
+        void prepare (const juce::dsp::ProcessSpec& spec);
+        void reset();
+        void updateFromPatch (const PatchParameters& patch, double sampleRate);
+        void processBlock (juce::AudioBuffer<float>& buffer);
 
     private:
-        PhotoSynthAudioProcessor& processor;
-        juce::WebBrowserComponent webView;
-        
-        std::unique_ptr<juce::FileChooser> chooser;
+        float saturate (float x) const;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhotoSynthAudioProcessorEditor)
+        juce::dsp::StateVariableTPTFilter<float> body1;
+        juce::dsp::StateVariableTPTFilter<float> body2;
+        juce::dsp::StateVariableTPTFilter<float> body3;
+
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> flutterDelay;
+        juce::dsp::Oscillator<float> flutterLfo;
+
+        std::vector<float> shaperCurve;
+        float lastSampleRate = 44100.0f;
+        float acousticWeight = 0.0f;
+        float flutterDepthSamples = 0.0f;
     };
 }
