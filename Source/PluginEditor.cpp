@@ -8,9 +8,8 @@ namespace photosynth
         addAndMakeVisible (webView);
         setSize (1280, 760);
 
-        // Listen for standard web messages from React
         webView.registerEventListener ("openFileChooser", [this] (const juce::var& message) {
-            juce::String targetSlot = message.toString(); // "A" or "B"
+            juce::String targetSlot = message.toString();
             
             chooser = std::make_unique<juce::FileChooser> (
                 "Select an image for Slot " + targetSlot,
@@ -27,7 +26,6 @@ namespace photosynth
                             juce::String base64 = mb.toBase64Encoding();
                             juce::String dataUrl = "data:image/" + file.getFileExtension().substring(1) + ";base64," + base64;
                             
-                            // Send data back to the React window function safely
                             juce::String js = "window.setImageData && window.setImageData('" + targetSlot + "', '" + dataUrl + "');";
                             webView.evaluateJavascript (js);
                         }
