@@ -18,9 +18,6 @@ namespace photosynth
     private:
         PhotoSynthAudioProcessor& processor;
         juce::WebBrowserComponent webView;
-        
-        // Declared chooser smart pointer for the native FileChooser dialog
-        std::unique_ptr<juce::FileChooser> chooser;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhotoSynthAudioProcessorEditor)
     };
