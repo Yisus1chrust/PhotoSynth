@@ -1,50 +1,39 @@
+#include "PluginProcessor.h"
 #include "PluginEditor.h"
 
 namespace photosynth
 {
     PhotoSynthAudioProcessorEditor::PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor& p)
-        : AudioProcessorEditor (&p), processor (p)
+        : AudioProcessorEditor (&p), audioProcessor (p)
     {
-        addAndMakeVisible (webView);
-        setSize (1280, 760);
+        macro1Slider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+        macro1Slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+        addAndMakeVisible (macro1Slider);
 
-        webView.registerEventListener ("openFileChooser", [this] (const juce::var& message) {
-            juce::String targetSlot = message.toString();
-            
-            chooser = std::make_unique<juce::FileChooser> (
-                "Select an image for Slot " + targetSlot,
-                juce::File{},
-                "*.png;*.jpg;*.jpeg"
-            );
+        macro2Slider.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+        macro2Slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 80, 20);
+        addAndMakeVisible (macro2Slider);
 
-            chooser->launchAsync (juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
-                [this, targetSlot] (const juce::FileChooser& fc) {
-                    auto file = fc.getResult();
-                    if (file.existsAsFile()) {
-                        juce::MemoryBlock mb;
-                        if (file.loadFileAsData (mb)) {
-                            juce::String base64 = mb.toBase64Encoding();
-                            juce::String dataUrl = "data:image/" + file.getFileExtension().substring(1) + ";base64," + base64;
-                            
-                            juce::String js = "window.setImageData && window.setImageData('" + targetSlot + "', '" + dataUrl + "');";
-                            webView.evaluateJavascript (js);
-                        }
-                    }
-                });
-        });
-
-        webView.goToURL ("http://localhost:3000");
+        setSize (600, 400); 
     }
 
     PhotoSynthAudioProcessorEditor::~PhotoSynthAudioProcessorEditor() = default;
 
     void PhotoSynthAudioProcessorEditor::paint (juce::Graphics& g)
     {
-        g.fillAll (juce::Colour (0xff0b1119));
+        g.fillAll (juce::Colour (0xff111318)); 
+
+        g.setColour (juce::Colours::white);
+        g.setFont (24.0f);
+        g.drawFittedText ("Photo Synth", getLocalBounds().removeFromTop (50), juce::Justification::centred, 1);
     }
 
     void PhotoSynthAudioProcessorEditor::resized()
     {
-        webView.setBounds (getLocalBounds());
+        auto area = getLocalBounds().reduced (40);
+        area.removeFromTop (40); 
+
+        macro1Slider.setBounds (area.removeFromLeft (area.getWidth() / 2));
+        macro2Slider.setBounds (area);
     }
 }
