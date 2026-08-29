@@ -3,7 +3,8 @@
 namespace photosynth
 {
     PhotoSynthAudioProcessorEditor::PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor& p)
-        : AudioProcessorEditor (&p), processor (p)
+        : AudioProcessorEditor (&p),
+          audioProcessor (p)
     {
         addAndMakeVisible (webView);
         setSize (1280, 760);
