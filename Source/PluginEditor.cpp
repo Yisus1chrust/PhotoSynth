@@ -8,7 +8,6 @@ namespace photosynth
         addAndMakeVisible (webView);
         setSize (1280, 760);
 
-        // Load your React app URL
         webView.goToURL ("http://localhost:3000");
     }
 
