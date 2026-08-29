@@ -1,6 +1,7 @@
 #pragma once
-#include <juce_gui_extra/juce_gui_extra.h>
+
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_gui_basics/juce_gui_basics.h>
 #include "PluginProcessor.h"
 
 namespace photosynth
@@ -8,7 +9,7 @@ namespace photosynth
     class PhotoSynthAudioProcessorEditor : public juce::AudioProcessorEditor
     {
     public:
-        explicit PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor&);
+        PhotoSynthAudioProcessorEditor (PhotoSynthAudioProcessor&);
         ~PhotoSynthAudioProcessorEditor() override;
 
         void paint (juce::Graphics&) override;
@@ -16,7 +17,14 @@ namespace photosynth
 
     private:
         PhotoSynthAudioProcessor& audioProcessor;
-        juce::WebBrowserComponent webView;
+
+        // Standard Native JUCE UI Controls
+        juce::Slider macro1Slider;
+        juce::Slider macro2Slider;
+
+        // Uncomment these later to automatically link your UI to your audio parameters
+        // std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> macro1Attachment;
+        // std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> macro2Attachment;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhotoSynthAudioProcessorEditor)
     };
