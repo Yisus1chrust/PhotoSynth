@@ -7,7 +7,6 @@ namespace photosynth
     {
         addAndMakeVisible (webView);
         setSize (1280, 760);
-
         webView.goToURL ("http://localhost:3000");
     }
 
