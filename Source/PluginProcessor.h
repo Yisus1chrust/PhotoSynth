@@ -13,7 +13,7 @@ namespace photosynth
         void prepareToPlay (double sampleRate, int samplesPerBlock) override;
         void releaseResources() override;
 
-       #Bools & Layouts
+       // Bools & Layouts
         bool acceptsMidi() const override;
         bool producesMidi() const override;
         bool isMidiEffect() const override;
